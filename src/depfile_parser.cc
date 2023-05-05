@@ -65,7 +65,7 @@ bool DepfileParser::Parse(string* content, string* err) {
       // start: beginning of the current parsed span.
       const char* start = in;
       char* yymarker = NULL;
-      
+
     {
       unsigned char yych;
       static const unsigned char yybm[] = {
@@ -332,6 +332,19 @@ yy32:
       len--;  // Strip off trailing colon, if any.
       parsing_targets = false;
       have_target = true;
+    }
+
+    const std::string kDepsPrefixEnglish = "Note: including file: ";
+    if (len >= static_cast<int>(kDepsPrefixEnglish.size()) &&
+        memcmp(filename, kDepsPrefixEnglish.c_str(),
+               kDepsPrefixEnglish.size()) == 0) {
+      filename += kDepsPrefixEnglish.size();
+      len -= kDepsPrefixEnglish.size();
+
+      while (len > 0 && filename[0] == ' ') {
+      filename++;
+      len--;
+      }
     }
 
     if (len > 0) {
